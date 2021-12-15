@@ -1,0 +1,101 @@
+---
+- hosts: webserver
+  gather_facts: no
+  tasks:
+    
+
+    #copying muiltiple files from local folder (anywhere inside the folder)
+    # - name: copying html file with playbook
+    #   become: true 
+    #   copy:
+    #     src: '{{item}}'
+    #     dest: /var/www/html
+    #     owner: root
+    #     group: root        
+    #     mode: 0644
+    #   loop:
+    #     - index.php
+    #     - index.html
+    #     - lognum.html
+    #     - lognum.php
+    #     - masterlog.php
+    #     - provider.tf
+        
+       
+    # - name: copying bash file with playbook
+    #   become: true 
+    #   copy:
+    #     src: '{{item}}'
+    #     dest: /ubuntu/home
+    #     owner: root
+    #     group: root        
+    #     mode: 0644
+    #   loop:
+    #     - index.php
+
+    - name: copying web files with playbook
+      become: true 
+      copy:
+        src: "{{ item }}"
+        dest: /var/www/html
+        owner: root
+        group: root        
+        mode: 0644
+        
+      with_fileglob:
+        - files/*.html
+      
+
+
+
+    - name: copying bash files with playbook
+      become: true 
+      copy:
+        src: "{{ item }}"
+        dest: /home/ubuntu
+        owner: root
+        group: root        
+        mode: 0644
+        
+      with_fileglob:
+        - files/*.sh
+        # - files/*.pem
+
+
+    - name: copying pem files with playbook
+      become: true 
+      copy:
+        src: "{{ item }}"
+        dest: /home/ubuntu
+        owner: ubuntu
+        group: ubuntu        
+        mode: 0400
+        
+      with_fileglob:
+        # - files/*.sh
+        - files/*.pem
+      
+
+    - name: Execute the bash script
+      command: sh /home/ubuntu/copy_to_pvt_servers.sh
+       
+
+
+    - name: setting html folder write permision
+      become: true 
+      file:
+        path: /var/www/html
+        state: directory
+        mode: 0777
+
+    # - name: setting pem chmod 400 permision
+    #   become: true 
+    #   file:
+    #     path: /home/ubuntu/ta-lab-key.pem
+    #     state: touch
+    #     mode: 0400
+
+
+
+
+   
